@@ -1,2 +1,4 @@
 Django>=3.0,<4.0
 djangorestframework==3.11.2
+django-rest-swagger==2.2.0
+drf-yasg==1.21.4

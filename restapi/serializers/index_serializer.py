@@ -8,6 +8,7 @@ class SnippetSerializer(serializers.Serializer):
     linenos = serializers.IntegerField(required=False)
     language = serializers.CharField(default='python')
     style = serializers.BooleanField()
+    asd = serializers.BooleanField(required=False, default=False)
 
     def create(self, validated_data):
         """
