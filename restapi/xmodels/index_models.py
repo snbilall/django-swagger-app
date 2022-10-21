@@ -1,9 +1,9 @@
 from datetime import datetime
-from decimal import Decimal
-from typing import NamedTuple
+
+from pydantic import BaseModel
 
 
-class Snippet(NamedTuple):
+class Snippet(BaseModel):
     created: datetime
     title: str
     code: str
