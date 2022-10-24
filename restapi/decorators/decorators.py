@@ -8,7 +8,7 @@ def trap_unreadable_post_error(view):
     def inner(request, *args, **kwargs):
         try:
             return view(request, *args, **kwargs)
-        except UnreadablePostError:
+        except UnreadablePostError as exc:
             return HttpResponse(status=500)
     return inner
 

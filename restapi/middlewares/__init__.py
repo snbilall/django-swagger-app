@@ -1,3 +1,6 @@
+import json
+
+
 class RequestMiddleware(object):
     def __init__(self, get_response):
         self.get_response = get_response
@@ -11,8 +14,18 @@ class RequestMiddleware(object):
 
     def process_view(self, request, view_func, view_args, view_kwargs):
         body_class = getattr(view_func, 'body_class', None)
+
+        body_data = {}
+
+        try:
+            body_data = json.loads(request.body)
+        except Exception:
+            print("Request body is not json, we will try to populate using POST data.")
+            body_data = request.POST
         if body_class is not None:
-            request.body = body_class(request.body)
+            casted_body = body_class.parse_obj(body_data)
+            request.casted_body = casted_body
 
     def process_request(self, request):
-        pass
+        request.req_id = 1234
+        request.casted_body = None
