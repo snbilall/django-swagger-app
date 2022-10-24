@@ -8,7 +8,7 @@ def trap_unreadable_post_error(view):
     def inner(request, *args, **kwargs):
         try:
             return view(request, *args, **kwargs)
-        except UnreadablePostError as exc:
+        except UnreadablePostError:
             return HttpResponse(status=500)
     return inner
 
@@ -25,10 +25,3 @@ def api_vieww(*args, **kwargs):
 
 def renderer_classes(*args, **kwargs):
     return decorators.renderer_classes(*args, **kwargs)
-
-
-def body_class(permission_class):
-    def decorator(func):
-        func.body_class = permission_class
-        return func
-    return decorator
