@@ -1,6 +1,6 @@
+from __future__ import annotations
 import json
 from inspect import signature
-from typing import get_origin
 
 from restapi.xmodels.request_base import AppData, RequestBase
 
@@ -17,23 +17,25 @@ class RequestMiddleware(object):
             return self.get_response(request)
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-        view_func_signature = signature(view_func)
-        annotation = view_func_signature.parameters['request'].annotation
-        if get_origin(annotation) == RequestBase:
-            body_data = {}
+        view_signature = signature(view_func)
+        annotation = view_signature.parameters['request'].annotation
+        if '__origin__' in annotation.__dict__:
+            origin = annotation.__origin__
 
-            try:
-                body_data = json.loads(request.body)
-            except Exception:
-                print("Request body is not json, we will try to populate using POST data.")
-                body_data = request.POST
+            if origin == RequestBase:
+                body_data = {}
 
-            request.app_data = AppData[annotation.__args__[0]]
-            request.app_data.body = annotation.__args__[0].parse_obj(body_data)
-        elif get_origin(annotation) is None:
-            pass
-        else:
-            raise SystemError("unexpected annotation :s" % get_origin(annotation))
+                try:
+                    body_data = json.loads(request.body)
+                except Exception:
+                    print("Request body is not json, we will try to populate using POST data.")
+                    body_data = request.POST
+
+                request.app_data = AppData[annotation.__args__[0]](annotation.__args__[0].parse_obj(body_data), 10, 20)
+            elif origin is None:
+                pass
+            else:
+                raise SystemError("unexpected annotation :s" % origin)
 
     def process_request(self, request):
         request.req_id = 1234
